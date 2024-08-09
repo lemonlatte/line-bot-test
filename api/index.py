@@ -54,8 +54,7 @@ async def webhook(
     line_signature: str = Depends(get_line_signature),
     request_bytes: bytes = Depends(get_body_bytes),
 ) -> JSONResponse:
-    async_api_client = AsyncApiClient(configuration)
-    line_bot_api = AsyncMessagingApi(async_api_client)
+
     # get request body as text
     body = request_bytes.decode()
 
@@ -80,12 +79,14 @@ async def webhook(
         # TODO: get_near_expire_balance
 
         try:
-            await line_bot_api.reply_message(
-                ReplyMessageRequest(
-                    reply_token=event.reply_token,
-                    messages=[TextMessage(text=user_id)],
+            async with AsyncApiClient(configuration) as line_client:
+                line_bot_api = AsyncMessagingApi(line_client)
+                await line_bot_api.reply_message(
+                    ReplyMessageRequest(
+                        reply_token=event.reply_token,
+                        messages=[TextMessage(text=user_id)],
+                    )
                 )
-            )
         except Exception as e:
             print(e)
 
