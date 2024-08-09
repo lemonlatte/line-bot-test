@@ -12,7 +12,7 @@ from linebot.v3.messaging import (
     TextMessage,
 )
 from linebot.v3.webhook import WebhookParser
-from linebot.v3.webhooks import MessageEvent, TextMessageContent
+from linebot.v3.webhooks import PostbackEvent
 
 app = FastAPI()
 
@@ -66,16 +66,23 @@ async def webhook(
     print("events", events)
 
     for event in events:
-        if not isinstance(event, MessageEvent):
-            continue
-        if not isinstance(event.message, TextMessageContent):
+        if not isinstance(event, PostbackEvent):
             continue
 
-        # await line_bot_api.reply_message(
-        #     ReplyMessageRequest(
-        #         reply_token=event.reply_token,
-        #         messages=[TextMessage(text=event.message.text)],
-        #     )
-        # )
+        if event.source.type != "user":
+            continue
+
+        user_id: str = event.source.user_id
+        print("user_id", user_id)
+        # TODO: query mbs login to get mbs user
+        # TODO: get_wallet
+        # TODO: get_near_expire_balance
+
+        await line_bot_api.reply_message(
+            ReplyMessageRequest(
+                reply_token=event.reply_token,
+                messages=[TextMessage(text=user_id)],
+            )
+        )
 
     return JSONResponse(status_code=200, content={"message": "OK"})
