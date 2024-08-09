@@ -28,8 +28,7 @@ if channel_access_token is None:
 
 configuration = Configuration(access_token=channel_access_token)
 
-async_api_client = AsyncApiClient(configuration)
-line_bot_api = AsyncMessagingApi(async_api_client)
+
 parser = WebhookParser(channel_secret)
 
 
@@ -55,6 +54,8 @@ async def webhook(
     line_signature: str = Depends(get_line_signature),
     request_bytes: bytes = Depends(get_body_bytes),
 ) -> JSONResponse:
+    async_api_client = AsyncApiClient(configuration)
+    line_bot_api = AsyncMessagingApi(async_api_client)
     # get request body as text
     body = request_bytes.decode()
 
