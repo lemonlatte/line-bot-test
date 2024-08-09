@@ -1,8 +1,7 @@
 import os
 import sys
-from urllib.request import Request
 
-from fastapi import Depends, FastAPI, HTTPException
+from fastapi import Depends, FastAPI, HTTPException, Request
 from fastapi.responses import JSONResponse
 from linebot.v3.exceptions import InvalidSignatureError
 from linebot.v3.messaging import (
@@ -45,7 +44,7 @@ async def get_body_bytes(request: Request) -> bytes:
 
 
 async def get_line_signature(request: Request) -> str:
-    signature: str = request.heeders.get("X-Line-Signature")
+    signature: str = request.headers.get("X-Line-Signature")
     if not signature:
         raise HTTPException(status_code=400, detail="Invalid signature.")
     return signature
@@ -55,7 +54,7 @@ async def get_line_signature(request: Request) -> str:
 async def webhook(
     line_signature: str = Depends(get_line_signature),
     request_bytes: bytes = Depends(get_body_bytes),
-) -> None:
+) -> JSONResponse:
     # get request body as text
     body = request_bytes.decode()
 
