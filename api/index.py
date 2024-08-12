@@ -57,7 +57,10 @@ async def get_line_events(
 
     print("line_signature", line_signature)
     print("body", request_bytes.decode())
-
+    print(
+        f"""curl -X POST -H 'Content-Type: application/json' -H 'X-Line-Signature {line_signature}' -d '{request_bytes.decode()}' """
+        f"""http://localhost:8000/webhook/line"""
+    )
     try:
         return parser.parse(request_bytes.decode(), line_signature)
     except InvalidSignatureError:
@@ -80,6 +83,8 @@ async def webhook(
 
         user_id: str = event.source.user_id
         print("user_id", user_id)
+        print("event.reply_token,", event.reply_token)
+
         # TODO: query mbs login to get mbs user
         # TODO: get_wallet
         # TODO: get_near_expire_balance
