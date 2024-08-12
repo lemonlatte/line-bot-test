@@ -64,9 +64,10 @@ async def get_line_events(
 async def webhook(
     events: list[Event] = Depends(get_line_events),
 ) -> JSONResponse:
-    print("events", events)
 
     for event in events:
+        print("event", event.json())
+
         if not isinstance(event, PostbackEvent):
             continue
 
