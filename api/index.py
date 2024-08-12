@@ -2,7 +2,7 @@ import json
 import os
 import sys
 
-from fastapi import Depends, FastAPI, HTTPException, Request
+from fastapi import Depends, FastAPI, HTTPException, Request, Response
 from fastapi.responses import JSONResponse
 from linebot.v3.exceptions import InvalidSignatureError
 from linebot.v3.messaging import (
@@ -58,7 +58,7 @@ async def get_line_events(
     print("line_signature", line_signature)
     print("body", request_bytes.decode())
     print(
-        f"""curl -X POST -H 'Content-Type: application/json' -H 'X-Line-Signature {line_signature}' -d '{request_bytes.decode()}' """
+        f"""curl -X POST -H 'Content-Type: application/json' -H 'X-Line-Signature: {line_signature}' -d '{request_bytes.decode()}' """
         f"""http://localhost:8000/webhook/line"""
     )
     try:
@@ -101,4 +101,4 @@ async def webhook(
         # except Exception as e:
         #     print(e)
 
-    return JSONResponse(status_code=200, content={"message": "OK"})
+    return Response(status_code=204)
