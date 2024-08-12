@@ -84,16 +84,16 @@ async def webhook(
         # TODO: get_wallet
         # TODO: get_near_expire_balance
 
-        try:
-            async with AsyncApiClient(configuration) as line_client:
-                line_bot_api = AsyncMessagingApi(line_client)
-                await line_bot_api.reply_message(
-                    ReplyMessageRequest(
-                        reply_token=event.reply_token,
-                        messages=[TextMessage(text=user_id)],
-                    )
-                )
-        except Exception as e:
-            print(e)
+        # try:
+        #     async with AsyncApiClient(configuration) as line_client:
+        #         line_bot_api = AsyncMessagingApi(line_client)
+        #         await line_bot_api.reply_message(
+        #             ReplyMessageRequest(
+        #                 reply_token=event.reply_token,
+        #                 messages=[TextMessage(text=user_id)],
+        #             )
+        #         )
+        # except Exception as e:
+        #     print(e)
 
     return JSONResponse(status_code=200, content={"message": "OK"})
