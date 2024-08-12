@@ -1,3 +1,4 @@
+import json
 import os
 import sys
 
@@ -53,6 +54,8 @@ async def get_line_events(
     line_signature: str = Depends(get_line_signature),
     request_bytes: bytes = Depends(get_body_bytes),
 ) -> list[Event]:
+
+    print("body", json.loads(request_bytes.decode()))
 
     try:
         return parser.parse(request_bytes.decode(), line_signature)
