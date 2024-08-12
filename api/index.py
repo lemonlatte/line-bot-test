@@ -12,7 +12,7 @@ from linebot.v3.messaging import (
     TextMessage,
 )
 from linebot.v3.webhook import WebhookParser
-from linebot.v3.webhooks import PostbackEvent
+from linebot.v3.webhooks import Event, PostbackEvent
 
 app = FastAPI()
 
@@ -49,20 +49,21 @@ async def get_line_signature(request: Request) -> str:
     return signature
 
 
-@app.post("/api/line/webhook")
-async def webhook(
+async def get_line_events(
     line_signature: str = Depends(get_line_signature),
     request_bytes: bytes = Depends(get_body_bytes),
-) -> JSONResponse:
-
-    # get request body as text
-    body = request_bytes.decode()
+) -> list[Event]:
 
     try:
-        events = parser.parse(body, line_signature)
+        return parser.parse(request_bytes.decode(), line_signature)
     except InvalidSignatureError:
         raise HTTPException(status_code=400, detail="Invalid signature")
 
+
+@app.post("/api/line/webhook")
+async def webhook(
+    events: list[Event] = Depends(get_line_events),
+) -> JSONResponse:
     print("events", events)
 
     for event in events:
