@@ -55,7 +55,8 @@ async def get_line_events(
     request_bytes: bytes = Depends(get_body_bytes),
 ) -> list[Event]:
 
-    print("body", json.loads(request_bytes.decode()))
+    print("line_signature", line_signature)
+    print("body", request_bytes.decode())
 
     try:
         return parser.parse(request_bytes.decode(), line_signature)
