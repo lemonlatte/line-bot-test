@@ -54,7 +54,6 @@ async def get_line_events(
     line_signature: str = Depends(get_line_signature),
     request_bytes: bytes = Depends(get_body_bytes),
 ) -> list[Event]:
-
     print("line_signature", line_signature)
     print("body", request_bytes.decode())
     print(
@@ -67,11 +66,19 @@ async def get_line_events(
         raise HTTPException(status_code=400, detail="Invalid signature")
 
 
-@app.post("/api/line/webhook")
-async def webhook(
+@app.post("/api/webhook/zendesk")
+async def zendesk_webhook(
+    request_bytes: bytes = Depends(get_body_bytes),
+) -> Response:
+    print("zendesk webhook body", request_bytes.decode())
+
+    return Response(status_code=204)
+
+
+@app.post("/api/webhook/line")
+async def line_webhook(
     events: list[Event] = Depends(get_line_events),
 ) -> JSONResponse:
-
     for event in events:
         print("event", event.json())
 
@@ -88,17 +95,5 @@ async def webhook(
         # TODO: query mbs login to get mbs user
         # TODO: get_wallet
         # TODO: get_near_expire_balance
-
-        # try:
-        #     async with AsyncApiClient(configuration) as line_client:
-        #         line_bot_api = AsyncMessagingApi(line_client)
-        #         await line_bot_api.reply_message(
-        #             ReplyMessageRequest(
-        #                 reply_token=event.reply_token,
-        #                 messages=[TextMessage(text=user_id)],
-        #             )
-        #         )
-        # except Exception as e:
-        #     print(e)
 
     return Response(status_code=204)
